@@ -27,20 +27,9 @@ class Bar
     types_of_scale.each do |scale|
       @units_sold[scale] = {}
       types_of_units.each do |unit|
-        p 'unit'
-        p unit
-        p percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
-        p 'venue'
-        p scale
-        p @number_of_people_in_venue[scale]
         @units_sold[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
       end
     end
-    p @units_sold
-    # buying_habit_percentages[:high][:beer]
-    # buying_habit_percentages[:high][:cocktails_and_liquor]
-    # buying_habit_percentages[:high][:wine]
-    # buying_habit_percentages[:high][:non_alcoholic]
   end
 end
 
@@ -53,13 +42,9 @@ def assert(e)
   end
 end
 
-puts "Test Low Capacity Number of People in Bar Return"
-assert(Bar.new({low: 10, medium: 20, high: 33}).number_of_people_in_venue[:low] == 6)
-puts "Test Medium Capacity Number of People in Bar Return"
-assert(Bar.new({low: 10, medium: 20, high: 33}).number_of_people_in_venue[:medium] == 12)
 puts "Test High Capacity Number of People in Bar Return"
 assert(Bar.new({low: 10, medium: 20, high: 33}).number_of_people_in_venue[:high] == 19)
-puts "Test Low Capacity Drinks Sold"
+puts "Test High Capacity Drinks Sold"
 assert(Bar.new({low: 10, medium: 20, high: 33}).units_sold[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1})
 
 
