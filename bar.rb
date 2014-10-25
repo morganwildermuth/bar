@@ -18,7 +18,13 @@ class Bar
     @units_sold_monthly = {}
     @capacity_of_venue = 60
     @number_of_people_in_venue = calculate_number_of_people_in_venue
+    calculate_units_sold
+  end
+
+  def calculate_units_sold
     calculate_units_sold_hourly
+    extrapolate_units_sold_weekly
+    extrapolate_units_sold_monthly
   end
 
   def calculate_number_of_people_in_venue
@@ -41,38 +47,44 @@ class Bar
         @units_sold_hourly[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
       end
     end
-    extrapolate_units_sold
   end
 
   def extrapolate_units_sold_weekly
-    weekly_sales = {low: 29, medium: 23, high: 45}
+    weekly_hours_open = {low: 29, medium: 23, high: 45}
     @types_of_units.each do |unit|
-      @units_sold_weekly[unit] =
+      units_sold_on_low_hours = @units_sold_hourly[:low][unit] * weekly_hours_open[:low]
+      units_sold_on_med_hours = @units_sold_hourly[:medium][unit] * weekly_hours_open[:medium]
+      units_sold_on_high_hours = @units_sold_hourly[:high][unit] * weekly_hours_open[:high]
+      @units_sold_weekly[unit] = units_sold_on_low_hours + units_sold_on_med_hours + units_sold_on_high_hours
     end
-    @units_sold_weekly = {beer:, cocktails_and_liquor:, non_alcoholic:, wine:}
   end
 
   def extrapolate_units_sold_monthly
+    @units_sold_monthly = @units_sold_weekly.dup.inject({}) do |hash, (k, v)|
+      hash[k] = v * 4; hash
+    end
   end
 end
 
-def assert(e)
+def assert(e, phrase)
   if e
     puts "pass"
   else
-    puts "fail"
+    puts phrase
   end
 end
 
 # Tests
 
+bar = Bar.new({low: 10, medium: 20, high: 33})
+
 puts "Test High Capacity Number of People in Bar Return"
-assert(Bar.new({low: 10, medium: 20, high: 33}).number_of_people_in_venue[:high] == 19)
+assert(bar.number_of_people_in_venue[:high] == 19, "#{bar.number_of_people_in_venue[:high]} does not equal 19")
 puts "Test High Capacity Drinks Sold"
-assert(Bar.new({low: 10, medium: 20, high: 33}).units_sold_hourly[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1})
+assert(bar.units_sold_hourly[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}, "#{bar.units_sold_hourly[:high]} does not equal {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}")
 puts "Test Weekly Drinks Sold"
-assert(Bar.new({low: 10, medium: 20, high: 33}).units_sold_weekly == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1})
-# puts "Test Monthy Drinks Sold"
-# assert(Bar.new({low: 10, medium: 20, high: 33}).units_sold_monthly == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1})
+assert(bar.units_sold_weekly[:beer] == 25, "#{bar.units_sold_weekly[:beer]} does not equal 885")
+puts "Test Monthy Drinks Sold"
+assert(bar.units_sold_monthly[:beer] == 3540, "#{bar.units_sold_monthly[:beer]} does not equal 3540")
 
 
