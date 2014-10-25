@@ -1,6 +1,4 @@
 #assumptions
-
-
 # Mon-Thurs 5pm-2am, Friday 5pm-3m, Sat 10am-3am, Sun 10am-2am
 # open monthly for: 54 + 10 +  17 + 16 = 97 weekly, so 388 hours a month
 # low hours = first three hours opened and last 2 hours on weekdays opened so 29 hours a week and 116 hours a month
