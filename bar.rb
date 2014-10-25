@@ -6,12 +6,12 @@
 # normal = remaining, 388 - (116 + 92), 388 - 208 = 180 hrs per month
 
 class Bar
-  attr_reader :number_of_people_in_venue, :types_of_units_sold_per_capacity_level, :units_sold
+  attr_reader :number_of_people_in_venue, :types_of_units_sold_per_capacity_level_each_hour, :units_sold
 
   def initialize(percent_full_of_capacity)
     @percent_full_of_capacity = percent_full_of_capacity
     @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
-    @types_of_units_sold_per_capacity_level = {}
+    @types_of_units_sold_per_capacity_level_each_hour = {}
     @units_sold = {:weekly => {}, :monthly => {}}
     @capacity_of_venue = 60
     @number_of_people_in_venue = calculate_number_of_people_in_venue
@@ -19,7 +19,7 @@ class Bar
   end
 
   def calculate_units_sold
-    calculate_types_of_units_sold_per_capacity_level
+    calculate_types_of_units_sold_per_capacity_level_each_hour
     extrapolate_units_sold_weekly
     extrapolate_units_sold_monthly
   end
@@ -35,13 +35,13 @@ class Bar
     (percentage*starting_value) / 100
   end
 
-  def calculate_types_of_units_sold_per_capacity_level
+  def calculate_types_of_units_sold_per_capacity_level_each_hour
     types_of_scale = [:high, :medium, :low]
     buying_habit_percentages = {beer: 70, cocktails_and_liquor: 20, wine: 3, non_alcoholic: 7}
     types_of_scale.each do |scale|
-      @types_of_units_sold_per_capacity_level[scale] = {}
+      @types_of_units_sold_per_capacity_level_each_hour[scale] = {}
       @types_of_units.each do |unit|
-        @types_of_units_sold_per_capacity_level[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
+        @types_of_units_sold_per_capacity_level_each_hour[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
       end
     end
   end
@@ -49,9 +49,9 @@ class Bar
   def extrapolate_units_sold_weekly
     weekly_hours_open = {low: 29, medium: 23, high: 45}
     @types_of_units.each do |unit|
-      units_sold_on_low_hours = @types_of_units_sold_per_capacity_level[:low][unit] * weekly_hours_open[:low]
-      units_sold_on_med_hours = @types_of_units_sold_per_capacity_level[:medium][unit] * weekly_hours_open[:medium]
-      units_sold_on_high_hours = @types_of_units_sold_per_capacity_level[:high][unit] * weekly_hours_open[:high]
+      units_sold_on_low_hours = @types_of_units_sold_per_capacity_level_each_hour[:low][unit] * weekly_hours_open[:low]
+      units_sold_on_med_hours = @types_of_units_sold_per_capacity_level_each_hour[:medium][unit] * weekly_hours_open[:medium]
+      units_sold_on_high_hours = @types_of_units_sold_per_capacity_level_each_hour[:high][unit] * weekly_hours_open[:high]
       @units_sold[:weekly][unit] = units_sold_on_low_hours + units_sold_on_med_hours + units_sold_on_high_hours
     end
   end
@@ -78,7 +78,7 @@ bar = Bar.new({low: 10, medium: 20, high: 33})
 puts "Test High Capacity Number of People in Bar Return"
 assert(bar.number_of_people_in_venue[:high] == 19, "#{bar.number_of_people_in_venue[:high]} does not equal 19")
 puts "Test High Capacity Drinks Sold"
-assert(bar.types_of_units_sold_per_capacity_level[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}, "#{bar.types_of_units_sold_per_capacity_level[:high]} does not equal {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}")
+assert(bar.types_of_units_sold_per_capacity_level_each_hour[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}, "#{bar.types_of_units_sold_per_capacity_level_each_hour[:high]} does not equal {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}")
 puts "Test Weekly Drinks Sold"
 assert(bar.units_sold[:weekly][:beer] == 885, "#{bar.units_sold[:weekly][:beer]} does not equal 885")
 puts "Test Monthy Drinks Sold"
