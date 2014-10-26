@@ -101,19 +101,14 @@ end
 
 # Tests
 
-bar = Bar.new({low: 10, medium: 20, high: 33}, 5, 60)
+# bar = Bar.new({low: 10, medium: 20, high: 33}, 5, 60)
 
-puts "Test High Capacity Drinks Sold Month 1"
+# puts "Test High Capacity Drinks Sold Month 1"
 # assert(bar.units_sold_each_month[0][:hourly][:high] == {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}, "#{bar.units_sold_each_month[0][:hourly][:high]} does not equal {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}")
 # puts "Test Weekly Drinks Sold Month 1"
 # assert(bar.units_sold_each_month[0][:weekly][:beer].round == 939, "#{bar.units_sold_each_month[0][:weekly][:beer].round} does not equal 939")
 # puts "Test Monthy Drinks Sold Month 1"
 # assert(bar.units_sold_each_month[0][:monthly][:beer].round == 3755, "#{bar.units_sold_each_month[0][:monthly][:beer].round} does not equal 3755")
 
-# puts "Test High Capacity Drinks Sold Month 3"
-# assert(bar.units_sold_each_month[1][:hourly][:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}, "#{bar.units_sold_each_month[1][:hourly][:high]} does not equal {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}")
-# puts "Test Weekly Drinks Sold Month 2"
-# assert(bar.units_sold_each_month[1][:weekly][:beer] == 885, "#{bar.units_sold_each_month[1][:weekly][:beer]} does not equal 885")
-# puts "Test Monthy Drinks Sold Month 2"
-# assert(bar.units_sold_each_month[1][:monthly][:beer] == 3540, "#{bar.units_sold_each_month[1][:monthly][:beer]} does not equal 3540")
 
+wild_spirit = Bar.new({low: 12, medium: 40, high: 60}, 5, 60)
