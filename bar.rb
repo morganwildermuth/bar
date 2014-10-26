@@ -8,12 +8,12 @@
 class Bar
   attr_reader :number_of_people_in_venue_per_capacity_level, :types_of_units_sold_per_capacity_level_each_hour, :units_sold
 
-  def initialize(percent_full_of_capacity, percentage_capacity_growth_rate)
+  def initialize(percent_full_of_capacity, percentage_capacity_growth_rate, capacity_of_venue)
     @percent_full_of_capacity = percent_full_of_capacity
     @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
     @types_of_units_sold_per_capacity_level_each_hour = {}
     @units_sold = {:weekly => {}, :monthly => []}
-    @capacity_of_venue = 60
+    @capacity_of_venue = capacity_of_venue
     @number_of_people_in_venue_per_capacity_level = calculate_number_of_people_in_venue_per_capacity_level
     calculate_units_sold
   end
@@ -77,7 +77,7 @@ end
 
 # Tests
 
-bar = Bar.new({low: 10, medium: 20, high: 33}, 5)
+bar = Bar.new({low: 10, medium: 20, high: 33}, 5, 60)
 
 puts "Test High Capacity Number of People in Bar Return"
 assert(bar.number_of_people_in_venue_per_capacity_level[:high] == 19, "#{bar.number_of_people_in_venue_per_capacity_level[:high]} does not equal 19")
