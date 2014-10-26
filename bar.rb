@@ -6,15 +6,15 @@
 # normal = remaining, 388 - (116 + 92), 388 - 208 = 180 hrs per month
 
 class Bar
-  attr_reader :number_of_people_in_venue, :types_of_units_sold_per_capacity_level_each_hour, :units_sold
+  attr_reader :number_of_people_in_venue_per_capacity_level, :types_of_units_sold_per_capacity_level_each_hour, :units_sold
 
-  def initialize(percent_full_of_capacity)
+  def initialize(percent_full_of_capacity, percentage_capacity_growth_rate)
     @percent_full_of_capacity = percent_full_of_capacity
     @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
     @types_of_units_sold_per_capacity_level_each_hour = {}
-    @units_sold = {:weekly => {}, :monthly => {}}
+    @units_sold = {:weekly => {}, :monthly => []}
     @capacity_of_venue = 60
-    @number_of_people_in_venue = calculate_number_of_people_in_venue
+    @number_of_people_in_venue_per_capacity_level = calculate_number_of_people_in_venue_per_capacity_level
     calculate_units_sold
   end
 
@@ -24,7 +24,7 @@ class Bar
     extrapolate_units_sold_monthly
   end
 
-  def calculate_number_of_people_in_venue
+  def calculate_number_of_people_in_venue_per_capacity_level
     low_capacity = percentage(@percent_full_of_capacity[:low], @capacity_of_venue)
     medium_capacity = percentage(@percent_full_of_capacity[:medium], @capacity_of_venue)
     high_capacity = percentage(@percent_full_of_capacity[:high], @capacity_of_venue)
@@ -41,7 +41,7 @@ class Bar
     types_of_scale.each do |scale|
       @types_of_units_sold_per_capacity_level_each_hour[scale] = {}
       @types_of_units.each do |unit|
-        @types_of_units_sold_per_capacity_level_each_hour[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue[scale])
+        @types_of_units_sold_per_capacity_level_each_hour[scale][unit] = percentage(buying_habit_percentages[unit], @number_of_people_in_venue_per_capacity_level[scale])
       end
     end
   end
@@ -57,8 +57,12 @@ class Bar
   end
 
   def extrapolate_units_sold_monthly
-    @units_sold[:monthly] = @units_sold[:weekly].dup.inject({}) do |hash, (k, v)|
-      hash[k] = v * 4; hash
+    month = 0
+    12.times do
+      @units_sold[:monthly][month] = @units_sold[:weekly].dup.inject({}) do |hash, (k, v)|
+        hash[k] = v * 4; hash
+      end
+      month += 1
     end
   end
 end
@@ -73,15 +77,18 @@ end
 
 # Tests
 
-bar = Bar.new({low: 10, medium: 20, high: 33})
+bar = Bar.new({low: 10, medium: 20, high: 33}, 5)
 
 puts "Test High Capacity Number of People in Bar Return"
-assert(bar.number_of_people_in_venue[:high] == 19, "#{bar.number_of_people_in_venue[:high]} does not equal 19")
+assert(bar.number_of_people_in_venue_per_capacity_level[:high] == 19, "#{bar.number_of_people_in_venue_per_capacity_level[:high]} does not equal 19")
 puts "Test High Capacity Drinks Sold"
 assert(bar.types_of_units_sold_per_capacity_level_each_hour[:high] == {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}, "#{bar.types_of_units_sold_per_capacity_level_each_hour[:high]} does not equal {beer: 13, cocktails_and_liquor: 3, wine: 0, non_alcoholic: 1}")
 puts "Test Weekly Drinks Sold"
 assert(bar.units_sold[:weekly][:beer] == 885, "#{bar.units_sold[:weekly][:beer]} does not equal 885")
 puts "Test Monthy Drinks Sold"
-assert(bar.units_sold[:monthly][:beer] == 3540, "#{bar.units_sold[:monthly][:beer]} does not equal 3540")
+assert(bar.units_sold[:monthly][0][:beer] == 3540, "#{bar.units_sold[:monthly][0][:beer]} does not equal 3540")
+# puts "Test Monthy Drinks Sold"
+# assert(bar.units_sold[:monthly][1][:beer] == 3540, "#{bar.units_sold[:monthly][:beer]} does not equal 3540")
 
+# WildSpirit = Bar.new({low: 10, medium: 20, high: 33})
 
