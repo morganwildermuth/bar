@@ -24,7 +24,8 @@ end
 
 class UnitsSold
   attr_reader :month
-  def initialize(percent_full_at_capacity, percentage_capacity_growth_rate, capacity_of_venue)
+  def initialize(percent_full_at_capacity, percentage_capacity_growth_rate, capacity_of_venue, time_increment)
+    @time_increment = time_increment
     @percent_full_at_capacity = percent_full_at_capacity
     @percentage_capacity_growth_rate = percentage_capacity_growth_rate/100.0
     @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
@@ -37,7 +38,7 @@ class UnitsSold
 
   def calculate_units_sold
     month_index = 0
-    12.times do
+    @time_increment.times do
       people_in_venue = calculate_number_of_people_in_venue_per_capacity_level(month_index)
       units_sold_hour = calculate_types_of_units_sold_per_capacity_level_each_hour(people_in_venue)
       units_sold_week = extrapolate_units_sold_weekly(units_sold_hour)
@@ -134,7 +135,7 @@ def run_program
   unit_type = ARGV[0]
   time_type = ARGV[1]
   time_increment = ARGV[2].to_i
-  units_sold = UnitsSold.new({low: 12, medium: 40, high: 60}, 5, 60)
+  units_sold = UnitsSold.new({low: 1, medium: 5, high: 10}, 5, 60, time_increment)
   presenter = UnitsSoldPresenter.new(units_sold)
   presenter.units_sold(unit_type, time_type, time_increment)
 end
@@ -159,6 +160,8 @@ end
 # EX
 # ruby bar.rb beer weekly 10
 # ruby bar.rb beer monthly 12
+# ruby bar.rb wine monthly 12
+# ruby bar.rb cocktails_and_liquor monthly 12
 
 
 run_program
