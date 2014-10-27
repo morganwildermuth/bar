@@ -16,10 +16,10 @@ class Bar
   end
 
 
-  def units_sold_this_year(type, time_frame)
+  def units_sold(type, time_frame, iterations)
     i = 0
     type_name = type.downcase.gsub(/\s|-/, "_") + "s"
-    12.times do
+    iterations.times do
       month = i + 1
       p "Month #{month}: #{@units_sold_each_month[i][time_frame.to_sym][type.to_sym].round} #{type_name} sold #{time_frame}"
       i += 1
@@ -27,6 +27,10 @@ class Bar
   end
 
   private
+
+  def units_sold_each_month
+    @units_sold_each_month
+  end
 
   def calculate_units_sold
     month_index = 0
