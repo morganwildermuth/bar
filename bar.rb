@@ -132,13 +132,18 @@ end
 # bar = Bar.new({low: 10, medium: 20, high: 33}, 5, 60)
 
 # puts "Test High Capacity Drinks Sold Month 1"
-# assert(bar.units_sold_each_month[0][:hourly][:high] == {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}, "#{bar.units_sold_each_month[0][:hourly][:high]} does not equal {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}")
+# assert(bar.send(:units_sold_each_month)[0][:hourly][:high] == {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}, "#{bar.send(:units_sold_each_month)[0][:hourly][:high]} does not equal {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}")
 # puts "Test Weekly Drinks Sold Month 1"
-# assert(bar.units_sold_each_month[0][:weekly][:beer].round == 939, "#{bar.units_sold_each_month[0][:weekly][:beer].round} does not equal 939")
+# assert(bar.send(:units_sold_each_month)[0][:weekly][:beer].round == 939, "#{bar.send(:units_sold_each_month)[0][:weekly][:beer].round} does not equal 939")
 # puts "Test Monthy Drinks Sold Month 1"
-# assert(bar.units_sold_each_month[0][:monthly][:beer].round == 3755, "#{bar.units_sold_each_month[0][:monthly][:beer].round} does not equal 3755")
+# assert(bar.send(:units_sold_each_month)[0][:monthly][:beer].round == 3755, "#{bar.send(:units_sold_each_month)[0][:monthly][:beer].round} does not equal 3755")
+
+# bar_two = Bar.new({low: 30, medium: 60, high: 90}, 5, 60)
+# puts "Test capacities stay constant at low 30, medium 60, and high 90"
+# assert((bar_two.units_sold("beer", "monthly", 1) + bar_two.units_sold("beer", "monthly", 1)) == bar_two.units_sold("beer", "monthly", 2), "Max capacities are not being implemented")
 
 
-wild_spirit = Bar.new({low: 12, medium: 40, high: 60}, 5, 60)
-wild_spirit.units_sold_this_year("beer", "weekly")
-wild_spirit.units_sold_this_year("beer", "monthly")
+# EX
+# wild_spirit = Bar.new({low: 12, medium: 40, high: 60}, 5, 60)
+# wild_spirit.units_sold("beer", "weekly", 2)
+# wild_spirit.units_sold("beer", "monthly", 12)
