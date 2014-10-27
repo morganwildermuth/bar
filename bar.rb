@@ -54,6 +54,7 @@ class Bar
         exponent_time_variable = month_index + 1
 
         value = present_value * present_value_plus_percent_addition ** exponent_time_variable
+        value = lower_capacity_level_if_above_max(value, key)
 
         hash[key] = value
       else
@@ -66,6 +67,18 @@ class Bar
     medium_capacity = percentage(percent_full_at_capacity[:medium], @capacity_of_venue)
     high_capacity = percentage(percent_full_at_capacity[:high], @capacity_of_venue)
     {low: low_capacity, medium: medium_capacity, high: high_capacity}
+  end
+
+  def lower_capacity_level_if_above_max(value, key)
+    case key
+    when :low
+      value = 30 if value > 30
+    when :medium
+      value = 60 if value > 60
+    when :high
+      value = 90 if value > 90
+    end
+    value
   end
 
   def percentage(percentage, starting_value)
