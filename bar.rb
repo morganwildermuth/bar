@@ -6,8 +6,6 @@
 # normal = remaining, 388 - (116 + 92), 388 - 208 = 180 hrs per month
 
 class Bar
-  attr_reader :units_sold_each_month
-
   def initialize(percent_full_at_capacity, percentage_capacity_growth_rate, capacity_of_venue)
     @percent_full_at_capacity = percent_full_at_capacity
     @percentage_capacity_growth_rate = percentage_capacity_growth_rate/100.0
@@ -16,6 +14,19 @@ class Bar
     @capacity_of_venue = capacity_of_venue
     calculate_units_sold
   end
+
+
+  def units_sold_this_year(type, time_frame)
+    i = 0
+    type_name = type.downcase.gsub(/\s|-/, "_") + "s"
+    12.times do
+      month = i + 1
+      p "Month #{month}: #{@units_sold_each_month[i][time_frame.to_sym][type.to_sym].round} #{type_name} sold #{time_frame}"
+      i += 1
+    end
+  end
+
+  private
 
   def calculate_units_sold
     month_index = 0
@@ -112,3 +123,5 @@ end
 
 
 wild_spirit = Bar.new({low: 12, medium: 40, high: 60}, 5, 60)
+wild_spirit.units_sold_this_year("beer", "weekly")
+wild_spirit.units_sold_this_year("beer", "monthly")
