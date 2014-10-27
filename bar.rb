@@ -5,32 +5,35 @@
 # high hours = 2 hours on weekdays so 8  + Fri/Sat from 8 pm until 2 am so 12, plus Sunday from 7 pm to 11 pm so 3  so 23 per week so 92 hours per month
 # normal = remaining, 388 - (116 + 92), 388 - 208 = 180 hrs per month
 
-class Bar
-  def initialize(percent_full_at_capacity, percentage_capacity_growth_rate, capacity_of_venue)
-    @percent_full_at_capacity = percent_full_at_capacity
-    @percentage_capacity_growth_rate = percentage_capacity_growth_rate/100.0
-    @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
-    @units_sold_each_month = []
-    @capacity_of_venue = capacity_of_venue
-    calculate_units_sold
+class UnitsSoldPresenter
+  def initialize(units_sold_object)
+    @units_sold_object = units_sold_object
   end
-
 
   def units_sold(type, time_frame, iterations)
     i = 0
     type_name = type.downcase.gsub(/\s|-/, "_") + "s"
     iterations.times do
       month = i + 1
-      p "Month #{month}: #{@units_sold_each_month[i][time_frame.to_sym][type.to_sym].round} #{type_name} sold #{time_frame}"
+      p "Month #{month}: #{@units_sold_object.month[i][time_frame.to_sym][type.to_sym].round} #{type_name} sold #{time_frame}"
       i += 1
     end
   end
 
-  private
+end
 
-  def units_sold_each_month
-    @units_sold_each_month
+class UnitsSold
+  attr_reader :all
+  def initialize(percent_full_at_capacity, percentage_capacity_growth_rate, capacity_of_venue)
+    @percent_full_at_capacity = percent_full_at_capacity
+    @percentage_capacity_growth_rate = percentage_capacity_growth_rate/100.0
+    @types_of_units = [:beer, :cocktails_and_liquor, :wine, :non_alcoholic]
+    @month = []
+    @capacity_of_venue = capacity_of_venue
+    calculate_units_sold
   end
+
+  private
 
   def calculate_units_sold
     month_index = 0
@@ -39,7 +42,7 @@ class Bar
       units_sold_hour = calculate_types_of_units_sold_per_capacity_level_each_hour(people_in_venue)
       units_sold_week = extrapolate_units_sold_weekly(units_sold_hour)
       units_sold_month = extrapolate_units_sold_monthly(units_sold_week)
-      @units_sold_each_month[month_index] = {:hourly => units_sold_hour, :weekly => units_sold_week, :monthly => units_sold_month}
+      @month[month_index] = {:hourly => units_sold_hour, :weekly => units_sold_week, :monthly => units_sold_month}
       month_index += 1
     end
   end
@@ -129,18 +132,20 @@ end
 
 # Tests
 
-# bar = Bar.new({low: 10, medium: 20, high: 33}, 5, 60)
+units_sold = UnitsSold.new({low: 10, medium: 20, high: 33}, 5, 60)
+units_sold_presenter = UnitsSoldPresenter.new(units_sold)
 
-# puts "Test High Capacity Drinks Sold Month 1"
-# assert(bar.send(:units_sold_each_month)[0][:hourly][:high] == {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}, "#{bar.send(:units_sold_each_month)[0][:hourly][:high]} does not equal {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}")
-# puts "Test Weekly Drinks Sold Month 1"
-# assert(bar.send(:units_sold_each_month)[0][:weekly][:beer].round == 939, "#{bar.send(:units_sold_each_month)[0][:weekly][:beer].round} does not equal 939")
-# puts "Test Monthy Drinks Sold Month 1"
-# assert(bar.send(:units_sold_each_month)[0][:monthly][:beer].round == 3755, "#{bar.send(:units_sold_each_month)[0][:monthly][:beer].round} does not equal 3755")
+puts "Test High Capacity Drinks Sold Month 1"
+assert(units_sold.month[0][:hourly][:high] == {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}, "#{units_sold.month[0][:hourly][:high]} does not equal {:beer=>13.86, :cocktails_and_liquor=>3.96, :wine=>0.5940000000000001, :non_alcoholic=>1.386}")
+puts "Test Weekly Drinks Sold Month 1"
+assert(units_sold.month[0][:weekly][:beer].round == 939, "#{units_sold.month[0][:weekly][:beer].round} does not equal 939")
+puts "Test Monthy Drinks Sold Month 1"
+assert(units_sold.month[0][:monthly][:beer].round == 3755, "#{units_sold.month[0][:monthly][:beer].round} does not equal 3755")
 
-# bar_two = Bar.new({low: 30, medium: 60, high: 90}, 5, 60)
-# puts "Test capacities stay constant at low 30, medium 60, and high 90"
-# assert((bar_two.units_sold("beer", "monthly", 1) + bar_two.units_sold("beer", "monthly", 1)) == bar_two.units_sold("beer", "monthly", 2), "Max capacities are not being implemented")
+units_sold_two = UnitsSold.new({low: 30, medium: 60, high: 90}, 5, 60)
+units_sold_presenter_two = UnitsSoldPresenter.new(units_sold_two)
+puts "Test capacities stay constant at low 30, medium 60, and high 90"
+assert((units_sold_presenter.units_sold("beer", "monthly", 1) + units_sold_presenter.units_sold("beer", "monthly", 1)) == units_sold_presenter.units_sold("beer", "monthly", 2), "Max capacities are not being implemented")
 
 
 # EX
