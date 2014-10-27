@@ -130,6 +130,14 @@ def assert(e, phrase)
   end
 end
 
+def run_program
+  unit_type = ARGV[0]
+  time_type = ARGV[1]
+  time_increment = ARGV[2].to_i
+  units_sold = UnitsSold.new({low: 12, medium: 40, high: 60}, 5, 60)
+  presenter = UnitsSoldPresenter.new(units_sold)
+  presenter.units_sold(unit_type, time_type, time_increment)
+end
 # Tests
 
 # units_sold = UnitsSold.new({low: 10, medium: 20, high: 33}, 5, 60)
@@ -149,6 +157,8 @@ end
 
 
 # EX
-wild_spirit_units_sold = UnitsSold.new({low: 12, medium: 40, high: 60}, 5, 60)
-wild_spirit_bar = UnitsSoldPresenter.new(wild_spirit_units_sold)
-wild_spirit_bar.units_sold("beer", "monthly", 12)
+# ruby bar.rb beer weekly 10
+# ruby bar.rb beer monthly 12
+
+
+run_program
